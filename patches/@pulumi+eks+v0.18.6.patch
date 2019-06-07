@@ -1,5 +1,5 @@
 diff --git a/node_modules/@pulumi/eks/dashboard.js b/node_modules/@pulumi/eks/dashboard.js
-index 24c09d5..c852a82 100644
+index 24c09d5..53adc03 100644
 --- a/node_modules/@pulumi/eks/dashboard.js
 +++ b/node_modules/@pulumi/eks/dashboard.js
 @@ -27,6 +27,34 @@ function createDashboard(name, args, parent, k8sProvider) {
@@ -17,7 +17,7 @@ index 24c09d5..c852a82 100644
 +            resources: ["nodes/stats"],
 +            verbs: ["get", "watch", "list", "create"],
 +        }],
-+    });
++    }, { parent: parent, provider: k8sProvider });
 +    const nodeStatsRoleBinding = new k8s.rbac.v1.ClusterRoleBinding(`${name}-heapster-node-stats`, {
 +        metadata: {
 +            name: "heapster-node-stats",
@@ -32,7 +32,7 @@ index 24c09d5..c852a82 100644
 +            name: nodeStatsRole.metadata.name,
 +            apiGroup: "rbac.authorization.k8s.io",
 +        },
-+    });
++    }, { parent: parent, provider: k8sProvider });
 +
      // Create a service account for admin access.
      const adminAccount = new k8s.core.v1.ServiceAccount(`${name}-eks-admin`, {
