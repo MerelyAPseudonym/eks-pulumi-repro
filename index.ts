@@ -27,6 +27,7 @@ const cluster = new eks.Cluster("cluster", {
     maxSize: maxSize,
     storageClasses: storageClass,
     deployDashboard: deployDashboard,
+    version: "1.11",
 });
 
 console.log("cluster.instanceRole:");
