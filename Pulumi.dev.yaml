@@ -1,0 +1,8 @@
+config:
+  aws:region: us-east-1
+  repro:deployDashboard: "true"
+  repro:desiredCapacity: "2"
+  repro:instanceType: t2.medium
+  repro:maxSize: "2"
+  repro:minSize: "1"
+  repro:storageClass: gp2
