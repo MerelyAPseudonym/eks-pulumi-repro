@@ -30,23 +30,5 @@ const cluster = new eks.Cluster("cluster", {
     version: "1.11",
 });
 
-console.log("cluster.instanceRole:");
-console.log(cluster.instanceRole);
-
-cluster.eksCluster.roleArn.apply(roleArn => {
-    console.log("cluster.eksCluster.roleArn:");
-    console.log(roleArn);
-});
-
-cluster.core.instanceProfile.role.apply(role => {
-    console.log("cluster.core.instanceProfile.role:");
-    console.log(role);
-});
-
-cluster.core.instanceRoles.apply(instanceRoles => {
-    console.log("cluster.core.instanceRoles:");
-    console.log(instanceRoles);
-});
-
 // Export the cluster's kubeconfig.
 export const kubeconfig = cluster.kubeconfig;
