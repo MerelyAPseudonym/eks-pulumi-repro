@@ -1,0 +1,52 @@
+diff --git a/node_modules/@pulumi/eks/dashboard.js b/node_modules/@pulumi/eks/dashboard.js
+index 24c09d5..53adc03 100644
+--- a/node_modules/@pulumi/eks/dashboard.js
++++ b/node_modules/@pulumi/eks/dashboard.js
+@@ -27,6 +27,34 @@ function createDashboard(name, args, parent, k8sProvider) {
+     const dashboard = new k8s.yaml.ConfigGroup(`${name}-dashboard`, {
+         yaml: dashboardYaml,
+     }, { parent: parent, providers: { kubernetes: k8sProvider } });
++
++    // See <https://github.com/awslabs/amazon-eks-ami/issues/128#issuecomment-450620004>
++    const nodeStatsRole = new k8s.rbac.v1.ClusterRole(`${name}-node-stats-full`, {
++        metadata: {
++            name: "node-stats-full",
++        },
++        rules: [{
++            apiGroups: [""],
++            resources: ["nodes/stats"],
++            verbs: ["get", "watch", "list", "create"],
++        }],
++    }, { parent: parent, provider: k8sProvider });
++    const nodeStatsRoleBinding = new k8s.rbac.v1.ClusterRoleBinding(`${name}-heapster-node-stats`, {
++        metadata: {
++            name: "heapster-node-stats",
++        },
++        subjects: [{
++            kind: "ServiceAccount",
++            name: "heapster",
++            namespace: "kube-system",
++        }],
++        roleRef: {
++            kind: "ClusterRole",
++            name: nodeStatsRole.metadata.name,
++            apiGroup: "rbac.authorization.k8s.io",
++        },
++    }, { parent: parent, provider: k8sProvider });
++
+     // Create a service account for admin access.
+     const adminAccount = new k8s.core.v1.ServiceAccount(`${name}-eks-admin`, {
+         metadata: {
+diff --git a/node_modules/@pulumi/eks/dashboard/heapster.yaml b/node_modules/@pulumi/eks/dashboard/heapster.yaml
+index e820ca5..875a0d5 100644
+--- a/node_modules/@pulumi/eks/dashboard/heapster.yaml
++++ b/node_modules/@pulumi/eks/dashboard/heapster.yaml
+@@ -24,7 +24,7 @@ spec:
+         imagePullPolicy: IfNotPresent
+         command:
+         - /heapster
+-        - --source=kubernetes:https://kubernetes.default
++        - --source=kubernetes:https://kubernetes.default?useServiceAccount=true&kubeletHttps=true&kubeletPort=10250&insecure=true
+         - --sink=influxdb:http://monitoring-influxdb.kube-system.svc:8086
+ ---
+ apiVersion: v1
