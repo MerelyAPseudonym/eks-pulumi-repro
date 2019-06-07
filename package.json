@@ -1,8 +1,9 @@
 {
     "name": "eks-cluster",
     "devDependencies": {
-        "typescript": "^3.4.5",
-        "@types/node": "latest"
+        "@types/node": "latest",
+        "patch-package": "^6.1.2",
+        "typescript": "^3.4.5"
     },
     "dependencies": {
         "@pulumi/pulumi": "latest",
@@ -10,5 +11,11 @@
         "@pulumi/awsx": "latest",
         "@pulumi/eks": "latest",
         "@pulumi/kubernetes": "latest"
+    },
+    "engines": {
+        "npm": ">=5"
+    },
+    "scripts": {
+        "postinstall": "patch-package"
     }
 }
